@@ -32,7 +32,7 @@ public class TransactionMapperTest {
     }
 
     private TransactionDto generateExpectedCompleteDto() {
-        return new TransactionDto(1L, LocalDate.now(), BigDecimal.valueOf(10), BigDecimal.valueOf(0));
+        return new TransactionDto(1L, LocalDate.now(), BigDecimal.valueOf(10), BigDecimal.valueOf(0), BigDecimal.valueOf(10));
     }
 
 
@@ -44,6 +44,7 @@ public class TransactionMapperTest {
         entity.setDate(LocalDate.now());
         entity.setDepositAmount(BigDecimal.valueOf(10));
         entity.setWithdrawAmount(BigDecimal.valueOf(0));
+        entity.setBalance(BigDecimal.valueOf(10));
         return entity;
     }
 

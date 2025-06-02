@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
-
     @ExceptionHandler({RessourceNotFoundException.class})
     public ResponseEntity<ApiError> handleNotFoundException(RessourceNotFoundException e) {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND.value(), e.getMessage(), LocalDateTime.now());
@@ -25,6 +24,5 @@ public class GlobalControllerAdvice {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), e.getMessage(), LocalDateTime.now());
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
-
 
 }

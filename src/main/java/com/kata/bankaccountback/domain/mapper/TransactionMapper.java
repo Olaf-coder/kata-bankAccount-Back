@@ -11,7 +11,8 @@ public class TransactionMapper {
                 entity.getId(),
                 entity.getDate(),
                 entity.getDepositAmount(),
-                entity.getWithdrawAmount()
+                entity.getWithdrawAmount(),
+                entity.getBalance()
         );
     }
 
@@ -21,6 +22,7 @@ public class TransactionMapper {
         entity.setDate(dto.date());
         entity.setDepositAmount(dto.depositAmount());
         entity.setWithdrawAmount(dto.withdrawAmount());
+        entity.setBalance(dto.balance());
         return entity;
     }
 }

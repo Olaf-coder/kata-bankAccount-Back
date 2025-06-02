@@ -23,6 +23,10 @@ public record TransactionDto(
 
         @Schema(description="Withdrawal amount")
         @Nullable
-        BigDecimal withdrawAmount
+        BigDecimal withdrawAmount,
+
+        @Schema(description="Balance")
+        @Nullable
+        BigDecimal balance
 )
 {}

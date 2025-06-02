@@ -25,6 +25,16 @@ public class TransactionEntity {
     @Column(name = "withdrawAmount")
     private BigDecimal withdrawAmount;
 
+    @Column(name = "balance")
+    private BigDecimal balance;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.date == null) {
+            this.date = LocalDate.now();
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -57,16 +67,24 @@ public class TransactionEntity {
         this.withdrawAmount = withdrawAmount;
     }
 
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         TransactionEntity that = (TransactionEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(date, that.date) && Objects.equals(depositAmount, that.depositAmount) && Objects.equals(withdrawAmount, that.withdrawAmount);
+        return Objects.equals(id, that.id) && Objects.equals(date, that.date) && Objects.equals(depositAmount, that.depositAmount) && Objects.equals(withdrawAmount, that.withdrawAmount) && Objects.equals(balance, that.balance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, date, depositAmount, withdrawAmount);
+        return Objects.hash(id, date, depositAmount, withdrawAmount, balance);
     }
 }
 
