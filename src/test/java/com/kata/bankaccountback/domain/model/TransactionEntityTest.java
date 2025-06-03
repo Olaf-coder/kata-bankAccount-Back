@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
-public class TransactionEntityTest {
+class TransactionEntityTest {
 
     @Test
     void should_equals_return_true_when_entity_are_equals() {

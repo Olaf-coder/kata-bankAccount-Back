@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = TransactionController.class)
 @Import(GlobalControllerAdvice.class)
-public class TransactionControllerTest {
+class TransactionControllerTest {
 
 
     private static final String ENDPOINT = "/v1.0/transactions";

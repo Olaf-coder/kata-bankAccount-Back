@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
-public class TransactionMapperTest {
+class TransactionMapperTest {
 
     private TransactionMapper mapper;
 
