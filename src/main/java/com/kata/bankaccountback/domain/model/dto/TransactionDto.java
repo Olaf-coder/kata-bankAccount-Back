@@ -12,7 +12,7 @@ public record TransactionDto(
         @Nullable
         Long id,
 
-        @Schema(description = "Transaction date", example = "2025-12-31", format = "date")
+        @Schema(description = "Transaction date", example = "2025-12-31", format = "date", accessMode = Schema.AccessMode.READ_ONLY)
         @JsonFormat(pattern = "yyyy-MM-dd")
         @Nullable
         LocalDate date,
@@ -25,7 +25,7 @@ public record TransactionDto(
         @Nullable
         BigDecimal withdrawAmount,
 
-        @Schema(description="Balance")
+        @Schema(description="Balance", accessMode = Schema.AccessMode.READ_ONLY)
         @Nullable
         BigDecimal balance
 )

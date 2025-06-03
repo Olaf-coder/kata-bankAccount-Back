@@ -6,11 +6,13 @@ import com.kata.bankaccountback.domain.model.entity.TransactionEntity;
 import com.kata.bankaccountback.domain.repository.TransactionRepository;
 import com.kata.bankaccountback.exceptions.InvalidDataException;
 import com.kata.bankaccountback.exceptions.RessourceNotFoundException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Service
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionMapper transactionMapper;
