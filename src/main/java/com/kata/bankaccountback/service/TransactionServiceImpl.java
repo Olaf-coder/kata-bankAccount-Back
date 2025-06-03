@@ -9,7 +9,6 @@ import com.kata.bankaccountback.exceptions.RessourceNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 public class TransactionServiceImpl implements TransactionService {
@@ -52,8 +51,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private boolean isTransactionAmountsCorrect(TransactionDto trans) {
-        return (isPositive(trans.withdrawAmount()) && isZero(trans.depositAmount())
-                || isPositive(trans.depositAmount()) && isZero(trans.withdrawAmount()));
+        return ((isPositive(trans.withdrawAmount()) && isZero(trans.depositAmount()))
+                || (isPositive(trans.depositAmount()) && isZero(trans.withdrawAmount())));
     }
 
     private boolean isPositive(BigDecimal amount) {
