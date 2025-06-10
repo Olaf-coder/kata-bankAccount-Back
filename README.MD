@@ -4,7 +4,7 @@ Ce projet de gestion de transaction est un exercice mandaté par un client afin 
 
 Ce repository git contient le code back end, pour pouvoir lancer le projet, vous aurez besoin du front end (prochainement) ou bien du swagger mis en place (voir "Information Supplémentaire").
 
-Ce projet doit être utilisé avec le projet front [BankAccount-Front](https://github.com/Olaf-coder/kata-phonebook-front)
+Ce projet doit être utilisé avec le projet front [BankAccount-Front](https://github.com/Olaf-coder/kata-bankAccount-Front)
 
 ## Sujet
 

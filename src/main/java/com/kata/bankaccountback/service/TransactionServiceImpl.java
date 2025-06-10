@@ -15,6 +15,8 @@ import java.util.List;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
+    public static final String TRANSACTION_AMOUNTS_ARE_NOT_CORRECT = "Transaction amounts are not correct";
+    public static final String NO_TRANSACTIONS_FOUND = "No transactions found";
     private final TransactionMapper transactionMapper;
     private final TransactionRepository transactionRepository;
 
@@ -27,7 +29,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionDto addTransaction(TransactionDto transaction) throws InvalidDataException {
         if (!isTransactionAmountsCorrect(transaction)) {
-            throw new InvalidDataException("Transaction amounts are not correct");
+            throw new InvalidDataException(TRANSACTION_AMOUNTS_ARE_NOT_CORRECT);
         }
 
         List<TransactionEntity> transactions = transactionRepository.findAll();
@@ -47,7 +49,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<TransactionDto> getAllTransactions() throws RessourceNotFoundException {
         List<TransactionEntity> transactions = transactionRepository.findAll();
         if (transactions.isEmpty()) {
-            throw new RessourceNotFoundException("No transactions found");
+            throw new RessourceNotFoundException(NO_TRANSACTIONS_FOUND);
         }
         return transactions.stream().map(transactionMapper::toDto).toList();
     }
