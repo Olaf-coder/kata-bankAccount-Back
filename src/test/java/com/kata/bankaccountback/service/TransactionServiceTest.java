@@ -6,7 +6,6 @@ import com.kata.bankaccountback.domain.model.entity.TransactionEntity;
 import com.kata.bankaccountback.domain.repository.TransactionRepository;
 import com.kata.bankaccountback.exceptions.InvalidDataException;
 import com.kata.bankaccountback.exceptions.RessourceNotFoundException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,16 +37,21 @@ public class TransactionServiceTest {
     @Mock
     private TransactionRepository transactionRepository;
 
+    @Mock
+    private BalanceService balanceService;
+
     @BeforeEach
     void setUp() {
-        transactionService = new TransactionServiceImpl(transactionMapper, transactionRepository);
+        transactionService = new TransactionServiceImpl(transactionMapper, transactionRepository, balanceService);
     }
 
     //CREATE
-    @Test
-    void SHOULD_call_save_once_with_correct_value_deposit_and_return_saved_transaction_WHEN_addTransaction_is_called_with_correct_transaction() {
+    // le faire en parameterized pour ZERO ou null sur Withdraw
+    @ParameterizedTest
+    @MethodSource("transactionProviderCorrectDepositForAddTransaction")
+
+    void SHOULD_call_save_once_with_correct_value_deposit_and_return_saved_transaction_WHEN_addTransaction_is_called_with_correct_transaction(TransactionDto inputDto) {
         //GIVEN
-        TransactionDto inputDto = new TransactionDto(null, null, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN);
         TransactionDto expectedDto = new TransactionDto(1L, LocalDate.now(), BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN);
 
         TransactionEntity inputEntity = createTransactionEntity(null, null, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN);
@@ -67,10 +71,10 @@ public class TransactionServiceTest {
         assertThat(actualDto).isEqualTo(expectedDto);
     }
 
-    @Test
-    void SHOULD_call_save_once_with_correct_value_withdraw_and_return_saved_transaction_WHEN_addTransaction_is_called_with_correct_transaction() {
+    @ParameterizedTest
+    @MethodSource("transactionProviderCorrectWithdrawForAddTransaction")
+    void SHOULD_call_save_once_with_correct_value_withdraw_and_return_saved_transaction_WHEN_addTransaction_is_called_with_correct_transaction(TransactionDto inputDto) {
         //GIVEN
-        TransactionDto inputDto = new TransactionDto(null, null, BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.valueOf(-10));
         TransactionDto expectedDto = new TransactionDto(1L, LocalDate.now(), BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.valueOf(-10));
 
         TransactionEntity inputEntity = createTransactionEntity(null, null, BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.valueOf(-10));
@@ -169,9 +173,26 @@ public class TransactionServiceTest {
     private static Stream<Arguments> transactionProviderIncorrectForAddTransaction() {
         return Stream.of(
                 Arguments.of(new TransactionDto(0L, null, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO)),
+                Arguments.of(new TransactionDto(0L, null, null, null, BigDecimal.ZERO)),
                 Arguments.of(new TransactionDto(0L, null, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO)),
                 Arguments.of(new TransactionDto(0L, null, BigDecimal.valueOf(-1), BigDecimal.ZERO, BigDecimal.ZERO)),
                 Arguments.of(new TransactionDto(0L, null, BigDecimal.ZERO, BigDecimal.valueOf(-1), BigDecimal.ZERO))
+        );
+    }
+
+    private static Stream<Arguments> transactionProviderCorrectWithdrawForAddTransaction() {
+        return Stream.of(
+                Arguments.of(new TransactionDto(null, null, BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.valueOf(-10))),
+                Arguments.of(new TransactionDto(null, null, null, BigDecimal.TEN,  BigDecimal.valueOf(-10)))
+
+        );
+    }
+
+    private static Stream<Arguments> transactionProviderCorrectDepositForAddTransaction() {
+        return Stream.of(
+                Arguments.of(new TransactionDto(null, null, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN)),
+                Arguments.of(new TransactionDto(null, null, BigDecimal.TEN, null, BigDecimal.TEN))
+
         );
     }
 

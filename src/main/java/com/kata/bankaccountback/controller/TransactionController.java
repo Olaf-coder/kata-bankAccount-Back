@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -43,5 +44,29 @@ public class TransactionController {
     })
     public ResponseEntity<TransactionDto> createTransaction(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Transaction to add") @RequestBody TransactionDto transaction) {
         return new ResponseEntity<>(transactionService.addTransaction(transaction), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/withdrawals/")
+    @Operation(summary = "Add new withdrawal")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Transaction Added",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = TransactionDto.class)
+                    )}),
+            @ApiResponse(responseCode = "400", description = "Transaction failed", content = @Content )
+    })
+    public ResponseEntity<TransactionDto> createWithdrawal(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Amount to withdraw") @RequestBody BigDecimal amount) {
+        return new ResponseEntity<>(transactionService.addWithdraw(amount), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/deposits/")
+    @Operation(summary = "Add new deposit")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Transaction Added",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = TransactionDto.class)
+                    )}),
+            @ApiResponse(responseCode = "400", description = "Transaction failed", content = @Content )
+    })
+    public ResponseEntity<TransactionDto> createDeposit(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Amount to depose") @RequestBody BigDecimal amount) {
+        return new ResponseEntity<>(transactionService.addDeposit(amount), HttpStatus.CREATED);
     }
 }

@@ -16,6 +16,7 @@ public class TransactionEntity {
     @Column(name="id", nullable = false, unique = true)
     private Long id;
 
+    //TODO mettre en localDateTime le jour où on souhaite avoir une vu administrateur plus précise.
     @Column(name="date", nullable = false)
     private LocalDate date;
 
