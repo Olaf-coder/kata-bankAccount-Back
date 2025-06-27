@@ -36,10 +36,10 @@ public class TransactionController {
     @PostMapping("/")
     @Operation(summary = "Add new transaction")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Transaction Added",
+            @ApiResponse(responseCode = "201", description = "Transaction Added",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = TransactionDto.class)
                     )}),
-            @ApiResponse(responseCode = "404", description = "Transaction failed", content = @Content )
+            @ApiResponse(responseCode = "400", description = "Transaction failed", content = @Content )
     })
     public ResponseEntity<TransactionDto> createTransaction(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Transaction to add") @RequestBody TransactionDto transaction) {
         return new ResponseEntity<>(transactionService.addTransaction(transaction), HttpStatus.CREATED);
