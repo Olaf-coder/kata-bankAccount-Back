@@ -1,8 +1,6 @@
 package com.kata.bankaccountback.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kata.bankaccountback.domain.model.dto.BalanceDto;
-import com.kata.bankaccountback.domain.model.dto.TransactionDto;
 import com.kata.bankaccountback.exceptions.RessourceNotFoundException;
 import com.kata.bankaccountback.service.BalanceService;
 import com.kata.bankaccountback.service.BalanceServiceImpl;
@@ -21,11 +19,12 @@ import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(controllers = BalanceController.class)
-public class BalanceControllerTest {
+class BalanceControllerTest {
 
     private static final String ENDPOINT = "/v1.0/balances";
 
@@ -49,6 +48,8 @@ public class BalanceControllerTest {
         Mockito.when(balanceService.getFirstBalance()).thenReturn(balanceDto);
 
         //WHEN THEN
+        assert balanceDto.id() != null;
+        assert balanceDto.date() != null;
         mockMvc.perform(get(ENDPOINT + "/"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))

@@ -1,7 +1,12 @@
 package com.kata.bankaccountback.domain.model.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -56,9 +61,6 @@ public class BalanceEntity {
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(id);
-        result = 31 * result + Objects.hashCode(date);
-        result = 31 * result + Objects.hashCode(balance);
-        return result;
+        return Objects.hash(id, date, balance);
     }
 }
