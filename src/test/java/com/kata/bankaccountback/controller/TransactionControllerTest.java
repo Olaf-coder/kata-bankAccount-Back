@@ -123,4 +123,77 @@ void should_call_addTransaction_and_return_201_and_Transaction_when_POST_transac
                 .andExpect(jsonPath("$.code", is(HttpStatus.NOT_FOUND.value())));
     }
 
+//DEPOSITS
+    //SUCCESS
+    @Test
+    void SHOULD_call_addDeposit_and_return_201_WHEN_POST_deposit_with_BigDecimal_RequestBody_is_called() throws Exception {
+        //GIVEN
+        BigDecimal newDeposit = BigDecimal.TEN;
+        TransactionDto transactionsaved = new TransactionDto(1L, LocalDate.now(), BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN);
+        Mockito.when(transactionService.addDeposit(newDeposit)).thenReturn(transactionsaved);
+
+        //WHEN THEN
+        mockMvc.perform(post(ENDPOINT + "/deposits/").contentType(MediaType.APPLICATION_JSON).content(newDeposit.toString()))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(transactionsaved.id().intValue())))
+                .andExpect(jsonPath("$.date", is(transactionsaved.date().toString())))
+                .andExpect(jsonPath("$.depositAmount", is(transactionsaved.depositAmount().intValue())))
+                .andExpect(jsonPath("$.withdrawAmount", is(transactionsaved.withdrawAmount().intValue())))
+                .andExpect(jsonPath("$.balance", is(transactionsaved.balance().intValue())))
+                .andReturn();
+    }
+
+    //FAILED
+    @Test
+    void SHOULD_call_addDeposit_and_return_400_WHEN_POST_deposit_with_wrong_BigDecimal_RequestBody_is_called() throws Exception {
+        //GIVEN
+        String message = "Bad Datas";
+        BigDecimal badDeposit = BigDecimal.ZERO;
+        Mockito.when(transactionService.addDeposit(badDeposit)).thenThrow(new InvalidDataException(message));
+
+        //WHEN THEN
+        mockMvc.perform(post(ENDPOINT + "/deposits/").content(badDeposit.toString()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", is(message)))
+                .andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
+                .andReturn();
+    }
+
+    //WITHDRAW
+    //SUCCESS
+    @Test
+    void SHOULD_call_addWithdraw_and_return_201_WHEN_POST_withdraw_with_BigDecimal_RequestBody_is_called() throws Exception {
+        //GIVEN
+        BigDecimal newWithdraw = BigDecimal.TEN;
+        TransactionDto transactionsaved = new TransactionDto(1L, LocalDate.now(), BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.ZERO);
+        Mockito.when(transactionService.addWithdraw(newWithdraw)).thenReturn(transactionsaved);
+
+        //WHEN THEN
+        mockMvc.perform(post(ENDPOINT + "/withdrawals/").contentType(MediaType.APPLICATION_JSON).content(newWithdraw.toString()))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(transactionsaved.id().intValue())))
+                .andExpect(jsonPath("$.date", is(transactionsaved.date().toString())))
+                .andExpect(jsonPath("$.depositAmount", is(transactionsaved.depositAmount().intValue())))
+                .andExpect(jsonPath("$.withdrawAmount", is(transactionsaved.withdrawAmount().intValue())))
+                .andExpect(jsonPath("$.balance", is(transactionsaved.balance().intValue())))
+                .andReturn();
+    }
+
+    //FAILED
+    @Test
+    void SHOULD_call_addWithdraw_and_return_400_WHEN_POST_withdrawals_with_wrong_BigDecimal_RequestBody_is_called() throws Exception {
+        //GIVEN
+        String message = "Bad Datas";
+        BigDecimal badWithdraw = BigDecimal.ZERO;
+        Mockito.when(transactionService.addWithdraw(badWithdraw)).thenThrow(new InvalidDataException(message));
+
+        //WHEN THEN
+        mockMvc.perform(post(ENDPOINT + "/withdrawals/").content(badWithdraw.toString()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", is(message)))
+                .andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
+                .andReturn();
+    }
 }
