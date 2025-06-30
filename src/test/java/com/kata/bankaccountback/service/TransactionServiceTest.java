@@ -1,6 +1,7 @@
 package com.kata.bankaccountback.service;
 
 import com.kata.bankaccountback.domain.mapper.TransactionMapper;
+import com.kata.bankaccountback.domain.model.dto.BalanceDto;
 import com.kata.bankaccountback.domain.model.dto.TransactionDto;
 import com.kata.bankaccountback.domain.model.entity.TransactionEntity;
 import com.kata.bankaccountback.domain.repository.TransactionRepository;
@@ -27,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class TransactionServiceTest {
+ class TransactionServiceTest {
 
     private TransactionServiceImpl transactionService;
 
@@ -121,10 +122,7 @@ public class TransactionServiceTest {
         verify(transactionRepository, times(1)).save(inputEntity);
         verify(transactionMapper, times(1)).toDto(savedEntity);
         assertThat(actualDto).isEqualTo(expectedDto);
-
-
     }
-
 
     @ParameterizedTest
     @MethodSource("transactionProviderIncorrectForAddTransaction")
@@ -169,6 +167,79 @@ public class TransactionServiceTest {
         verify(transactionMapper, never()).toDto(any(TransactionEntity.class));
     }
 
+    @Test
+    void SHOULD_call_getFirstBalance_updateBalance_and_transactionSave_Once_and_return_savedTransaction_WHEN_addWithdraw_is_called_with_correct_amount___() {
+        //GIVEN
+        BigDecimal inputAmountWithdrawal = BigDecimal.TEN;
+        BalanceDto expectedBalanceDto = new BalanceDto(1L, LocalDate.now(), BigDecimal.TEN);
+        BigDecimal expectedNewBalance = BigDecimal.ZERO;
+        TransactionDto expectedTransactionDto = new TransactionDto(null, null, BigDecimal.ZERO, inputAmountWithdrawal, BigDecimal.ZERO);
+
+        TransactionEntity inputTransEntity = createTransactionEntity(null, null, BigDecimal.ZERO, inputAmountWithdrawal, BigDecimal.TEN);
+        TransactionEntity savedTransEntity = createTransactionEntity(1L, LocalDate.now(), BigDecimal.TEN, inputAmountWithdrawal, BigDecimal.TEN);
+
+        when(balanceService.getFirstBalance()).thenReturn(expectedBalanceDto);
+        when(transactionMapper.toEntity(expectedTransactionDto)).thenReturn(inputTransEntity);
+        when(transactionRepository.save(inputTransEntity)).thenReturn(savedTransEntity);
+
+        //WHEN
+        transactionService.addWithdraw(BigDecimal.TEN);
+
+        //THEN
+        verify(balanceService, times(1)).getFirstBalance();
+        verify(balanceService, times(1)).updateBalance(1L, expectedNewBalance, LocalDate.now());
+    }
+
+    @ParameterizedTest
+    @MethodSource("createIncorrectAmount")
+    void SHOULD_not_call_updateBalance_and_throw_InvalidDateException_WHEN_add_withdraw_is_called_with_incorrect_amount(BigDecimal wrongAmount) {
+        //GIVEN
+
+        //WHEN //THEN
+        assertThatExceptionOfType(InvalidDataException.class).isThrownBy(() -> transactionService.addWithdraw(wrongAmount));
+
+        verify(balanceService, never()).getFirstBalance();
+        verify(balanceService, never()).updateBalance(any(Long.class), any(BigDecimal.class), any(LocalDate.class));
+        verify(transactionRepository, never()).save(any(TransactionEntity.class));
+    }
+
+    @Test
+    void SHOULD_call_getFirstBalance_updateBalance_and_transactionSave_Once_and_return_savedTransaction_WHEN_addDeposit_is_called_with_correct_amount() {
+        //GIVEN
+        BigDecimal inputAmountDeposit = BigDecimal.TEN;
+        BalanceDto expectedBalanceDto = new BalanceDto(1L, LocalDate.now(), BigDecimal.ZERO);
+        BigDecimal expectedNewBalance = BigDecimal.TEN;
+        TransactionDto expectedTransactionDto = new TransactionDto(null, null, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN);
+
+        TransactionEntity inputTransEntity = createTransactionEntity(null, null, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.TEN);
+        TransactionEntity savedTransEntity = createTransactionEntity(1L, LocalDate.now(), inputAmountDeposit, BigDecimal.ZERO, BigDecimal.TEN);
+
+        when(balanceService.getFirstBalance()).thenReturn(expectedBalanceDto);
+        when(transactionMapper.toEntity(expectedTransactionDto)).thenReturn(inputTransEntity);
+        when(transactionRepository.save(inputTransEntity)).thenReturn(savedTransEntity);
+
+        //WHEN
+        transactionService.addDeposit(inputAmountDeposit);
+
+        //THEN
+        verify(balanceService, times(1)).getFirstBalance();
+        verify(balanceService, times(1)).updateBalance(1L, expectedNewBalance, LocalDate.now());
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("createIncorrectAmount")
+    void SHOULD_not_call_updateBalance_and_throw_InvalidDateException_WHEN_addDeposit_is_called_with_incorrect_amount(BigDecimal wrongAmount) {
+        //GIVEN
+
+        //WHEN //THEN
+        assertThatExceptionOfType(InvalidDataException.class).isThrownBy(() -> transactionService.addDeposit(wrongAmount));
+
+        verify(balanceService, never()).getFirstBalance();
+        verify(balanceService, never()).updateBalance(any(Long.class), any(BigDecimal.class), any(LocalDate.class));
+        verify(transactionRepository, never()).save(any(TransactionEntity.class));
+    }
+
 
     private static Stream<Arguments> transactionProviderIncorrectForAddTransaction() {
         return Stream.of(
@@ -193,6 +264,14 @@ public class TransactionServiceTest {
                 Arguments.of(new TransactionDto(null, null, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN)),
                 Arguments.of(new TransactionDto(null, null, BigDecimal.TEN, null, BigDecimal.TEN))
 
+        );
+    }
+
+    private static Stream<Arguments> createIncorrectAmount() {
+        return Stream.of(
+                Arguments.of(BigDecimal.ZERO),
+                Arguments.of(BigDecimal.valueOf(-1)),
+                Arguments.of((Object) null)
         );
     }
 

@@ -4,7 +4,6 @@ import com.kata.bankaccountback.domain.mapper.TransactionMapper;
 import com.kata.bankaccountback.domain.model.dto.BalanceDto;
 import com.kata.bankaccountback.domain.model.dto.TransactionDto;
 import com.kata.bankaccountback.domain.model.entity.TransactionEntity;
-import com.kata.bankaccountback.domain.repository.BalanceRepository;
 import com.kata.bankaccountback.domain.repository.TransactionRepository;
 import com.kata.bankaccountback.exceptions.InvalidDataException;
 import com.kata.bankaccountback.exceptions.RessourceNotFoundException;
@@ -33,7 +32,6 @@ public class TransactionServiceImpl implements TransactionService {
         this.balanceService = balanceService;
     }
 
-    //TODO potentiel blocage du retrait si pas assez d'argent ? => fonctionel pur
     @Transactional
     @Override
     public TransactionDto addTransaction(TransactionDto transaction) throws InvalidDataException {
@@ -43,12 +41,12 @@ public class TransactionServiceImpl implements TransactionService {
 
         List<TransactionEntity> transactions = transactionRepository.findAll();
         BigDecimal newBalance = BigDecimal.ZERO;
+        //TODO: utiliser BalanceService a la place.
         if (!transactions.isEmpty()) {
             BigDecimal sumWithdrawal = transactions.stream().map(TransactionEntity::getWithdrawAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal sumDeposit = transactions.stream().map(TransactionEntity::getDepositAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
             newBalance = sumDeposit.subtract(sumWithdrawal);
         }
-
 
         BigDecimal realDepositAmount = getRealDepositAmount(transaction.depositAmount());
         BigDecimal realWithdrawAmount = getRealDepositAmount(transaction.withdrawAmount());
@@ -100,13 +98,11 @@ public class TransactionServiceImpl implements TransactionService {
                 || (isPositive(trans.depositAmount()) && isZeroOrNull(trans.withdrawAmount())));
     }
 
-    //TODO: ajouter les test pour les nouvelles verfication null et not null
 
     private boolean isPositive(BigDecimal amount) {
         //NON NULL et positif
         return (amount != null) && (amount.compareTo(BigDecimal.ZERO) > 0);
     }
-    //TODO à faire
 
     private boolean isZeroOrNull(BigDecimal amount) {
         return (amount == null) || (amount.compareTo(BigDecimal.ZERO) == 0);
