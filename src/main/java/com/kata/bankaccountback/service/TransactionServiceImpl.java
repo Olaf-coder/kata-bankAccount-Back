@@ -39,21 +39,18 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidDataException(TRANSACTION_AMOUNTS_ARE_NOT_CORRECT);
         }
 
-        List<TransactionEntity> transactions = transactionRepository.findAll();
-        BigDecimal newBalance = BigDecimal.ZERO;
-        //TODO: utiliser BalanceService a la place.
-        if (!transactions.isEmpty()) {
-            BigDecimal sumWithdrawal = transactions.stream().map(TransactionEntity::getWithdrawAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal sumDeposit = transactions.stream().map(TransactionEntity::getDepositAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-            newBalance = sumDeposit.subtract(sumWithdrawal);
-        }
+        BalanceDto currentBalance = balanceService.getFirstBalance();
+        BigDecimal newTotalToSave = currentBalance.balance();
 
         BigDecimal realDepositAmount = getRealDepositAmount(transaction.depositAmount());
         BigDecimal realWithdrawAmount = getRealDepositAmount(transaction.withdrawAmount());
 
-        newBalance = newBalance.add(realDepositAmount).subtract(realWithdrawAmount);
+        newTotalToSave = newTotalToSave.add(realDepositAmount).subtract(realWithdrawAmount);
 
-        TransactionDto result = new TransactionDto(null, null, transaction.depositAmount(), transaction.withdrawAmount(), newBalance);
+        TransactionDto result = new TransactionDto(null, null, transaction.depositAmount(), transaction.withdrawAmount(), newTotalToSave);
+
+        BalanceDto balanceDtoResult = balanceService.updateBalance(currentBalance.id(), newTotalToSave, LocalDate.now());
+
         return transactionMapper.toDto(transactionRepository.save(transactionMapper.toEntity(result)));
     }
 
