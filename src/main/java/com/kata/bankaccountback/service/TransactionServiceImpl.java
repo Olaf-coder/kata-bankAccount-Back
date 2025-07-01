@@ -49,7 +49,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         TransactionDto result = new TransactionDto(null, null, transaction.depositAmount(), transaction.withdrawAmount(), newTotalToSave);
 
-        BalanceDto balanceDtoResult = balanceService.updateBalance(currentBalance.id(), newTotalToSave, LocalDate.now());
+        balanceService.updateBalance(currentBalance.id(), newTotalToSave, LocalDate.now());
 
         return transactionMapper.toDto(transactionRepository.save(transactionMapper.toEntity(result)));
     }
