@@ -72,6 +72,24 @@ services:
       timeout: 10s
       retries: 5
 
+  logstash:
+    image: logstash:${ELASTIC_VERSION}
+    container_name: bank-account-logstash
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    ports:
+      - "5044:5044"
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+    networks:
+      - bank-account-network
+
 networks:
   bank-account-network:
     driver: bridge

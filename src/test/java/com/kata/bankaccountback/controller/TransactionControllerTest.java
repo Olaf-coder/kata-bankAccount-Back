@@ -37,7 +37,7 @@ class TransactionControllerTest {
     private static final String ENDPOINT = "/v1.0/transactions";
 
     @MockitoBean
-    private final TransactionService transactionService = Mockito.mock(TransactionServiceImpl.class);
+    private TransactionService transactionService;
 
     @Autowired
     private MockMvc mockMvc;

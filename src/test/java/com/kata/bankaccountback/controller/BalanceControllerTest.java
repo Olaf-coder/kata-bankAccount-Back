@@ -1,11 +1,14 @@
 package com.kata.bankaccountback.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kata.bankaccountback.domain.model.dto.BalanceDto;
-import com.kata.bankaccountback.domain.model.dto.TransactionDto;
-import com.kata.bankaccountback.exceptions.RessourceNotFoundException;
-import com.kata.bankaccountback.service.BalanceService;
-import com.kata.bankaccountback.service.BalanceServiceImpl;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,13 +19,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import com.kata.bankaccountback.domain.model.dto.BalanceDto;
+import com.kata.bankaccountback.exceptions.RessourceNotFoundException;
+import com.kata.bankaccountback.service.BalanceService;
+import com.kata.bankaccountback.service.BalanceServiceImpl;
 
 @WebMvcTest(controllers = BalanceController.class)
 public class BalanceControllerTest {

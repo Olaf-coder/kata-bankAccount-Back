@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("v1.0/balances")
 public class BalanceController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BalanceController.class);
     private final BalanceService balanceService;
 
     public BalanceController(BalanceService balanceService) {this.balanceService = balanceService;}
@@ -33,6 +36,12 @@ public class BalanceController {
                     content = @Content)
     })
     public ResponseEntity<BalanceDto> getFirstBalance() {
-        return new ResponseEntity<>(balanceService.getFirstBalance(), HttpStatus.OK);
+        LOGGER.info("REST request to get first balance");
+        LOGGER.debug("Entering getFirstBalance endpoint");
+        
+        BalanceDto balance = balanceService.getFirstBalance();
+        
+        LOGGER.info("Successfully retrieved balance with ID: {}", balance.id());
+        return new ResponseEntity<>(balance, HttpStatus.OK);
     }
 }
