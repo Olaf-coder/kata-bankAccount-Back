@@ -56,9 +56,6 @@ public class BalanceEntity {
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(id);
-        result = 31 * result + Objects.hashCode(date);
-        result = 31 * result + Objects.hashCode(balance);
-        return result;
+        return Objects.hash(id, date, balance);
     }
 }

@@ -1,0 +1,16 @@
+services:
+  #
+  baseDeDonneeMysql:
+    image: mysql:latest
+    container_name: "baseDeDonneeMysql"
+    #restart: unless-stopped (a apprendre)
+    environment:
+      MYSQL_DATABASE: "BankAccountDB"
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+    volumes:
+      - $PWD/../init.sql:/docker-entrypoint-initdb.d/1_createTablesInitFile.sql
+      - $PWD/../data.sql:/docker-entrypoint-initdb.d/2_intializeBalance.sql
+    ports:
+#      - port depuis l'exterieur du container machine : port du service a l'interieur du container
+      - "3307:3306"
+      #volume a faire
