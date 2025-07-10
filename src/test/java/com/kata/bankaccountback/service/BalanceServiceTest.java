@@ -9,6 +9,7 @@ import com.kata.bankaccountback.exceptions.RessourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -83,11 +84,12 @@ public class BalanceServiceTest {
         when(balanceMapper.toDto(foundEntity)).thenReturn(expectedDto);
         when(balanceRepository.findById(1L)).thenReturn(Optional.of(foundEntity));
         //WHEN
-       balanceService.getFirstBalance();
+        BalanceDto actualDto = balanceService.getFirstBalance();
 
         //THEN
         verify(balanceRepository, times(1)).findById(1L);
         verify(balanceService, times(1)).getBalanceById(1L);
+        assertThat(actualDto).isEqualTo(expectedDto);
     }
 
     @Test
@@ -97,19 +99,24 @@ public class BalanceServiceTest {
         BigDecimal newAmount = BigDecimal.ZERO;
         LocalDate newDate = LocalDate.now();
         BalanceEntity savedEntity = createBalanceEntity(1L, newDate, newAmount);
-        BalanceDto expectedDto = new BalanceDto(1L, newDate, newAmount);
+        BalanceDto expectedUpdatedDto = new BalanceDto(1L, newDate, newAmount);
+
+        ArgumentCaptor<BalanceEntity> entityCaptor = ArgumentCaptor.forClass(BalanceEntity.class);
 
         when(balanceRepository.findById(1L)).thenReturn(Optional.of(inputEntity));
-        when(balanceRepository.save(inputEntity)).thenReturn(savedEntity);
-        when(balanceMapper.toDto(savedEntity)).thenReturn(expectedDto);
+        when(balanceRepository.save(entityCaptor.capture())).thenReturn(savedEntity);
+        when(balanceMapper.toDto(savedEntity)).thenReturn(expectedUpdatedDto);
 
         //WHEN
-        balanceService.updateBalance(1L, BigDecimal.ZERO, LocalDate.now());
+        BalanceDto actualUpdatedDto = balanceService.updateBalance(1L, BigDecimal.ZERO, LocalDate.now());
 
         //THEN
         verify(balanceRepository, times(1)).findById(1L);
-        verify(balanceRepository, times(1)).save(inputEntity);
+        verify(balanceRepository, times(1)).save(entityCaptor.capture());
         verify(balanceMapper, times(1)).toDto(savedEntity);
+        //il faut faire un times sur balanceentity.setBalance(newAmount) et balanceentity.setDate(newDate); durant le update
+        assertThat(entityCaptor.getValue()).isEqualTo(savedEntity);
+        assertThat(actualUpdatedDto).isEqualTo(expectedUpdatedDto);
 
     }
 
