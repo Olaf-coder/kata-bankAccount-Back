@@ -19,5 +19,4 @@ public record BalanceDto(
 
         @Schema(description="Balance", accessMode = Schema.AccessMode.READ_ONLY)
         BigDecimal balance
-
 ) {}

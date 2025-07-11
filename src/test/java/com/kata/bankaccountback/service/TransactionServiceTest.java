@@ -22,10 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.any;
 
 @ExtendWith(MockitoExtension.class)
  class TransactionServiceTest {
@@ -150,20 +153,23 @@ import static org.mockito.Mockito.*;
         BalanceDto expectedBalanceDto = new BalanceDto(1L, LocalDate.now(), BigDecimal.TEN);
         BigDecimal expectedNewBalance = BigDecimal.ZERO;
         TransactionDto expectedTransactionDto = new TransactionDto(null, null, BigDecimal.ZERO, inputAmountWithdrawal, BigDecimal.ZERO);
+        TransactionDto expectedSavedTransactionDto = new TransactionDto(1L, LocalDate.now(), BigDecimal.TEN, inputAmountWithdrawal, BigDecimal.TEN);
 
         TransactionEntity inputTransEntity = createTransactionEntity(null, null, BigDecimal.ZERO, inputAmountWithdrawal, BigDecimal.TEN);
         TransactionEntity savedTransEntity = createTransactionEntity(1L, LocalDate.now(), BigDecimal.TEN, inputAmountWithdrawal, BigDecimal.TEN);
 
         when(balanceService.getFirstBalance()).thenReturn(expectedBalanceDto);
         when(transactionMapper.toEntity(expectedTransactionDto)).thenReturn(inputTransEntity);
+        when(transactionMapper.toDto(savedTransEntity)).thenReturn(expectedSavedTransactionDto);
         when(transactionRepository.save(inputTransEntity)).thenReturn(savedTransEntity);
 
         //WHEN
-        transactionService.addWithdraw(BigDecimal.TEN);
+        TransactionDto actualDto = transactionService.addWithdraw(BigDecimal.TEN);
 
         //THEN
         verify(balanceService, times(1)).getFirstBalance();
         verify(balanceService, times(1)).updateBalance(1L, expectedNewBalance, LocalDate.now());
+        assertThat(actualDto).isEqualTo(expectedSavedTransactionDto);
     }
 
     @ParameterizedTest
@@ -186,20 +192,24 @@ import static org.mockito.Mockito.*;
         BalanceDto expectedBalanceDto = new BalanceDto(1L, LocalDate.now(), BigDecimal.ZERO);
         BigDecimal expectedNewBalance = BigDecimal.TEN;
         TransactionDto expectedTransactionDto = new TransactionDto(null, null, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.TEN);
+        TransactionDto expectedSavedTransactionDto = new TransactionDto(1L, LocalDate.now(), inputAmountDeposit, BigDecimal.TEN, BigDecimal.TEN);
+
 
         TransactionEntity inputTransEntity = createTransactionEntity(null, null, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.TEN);
         TransactionEntity savedTransEntity = createTransactionEntity(1L, LocalDate.now(), inputAmountDeposit, BigDecimal.ZERO, BigDecimal.TEN);
 
         when(balanceService.getFirstBalance()).thenReturn(expectedBalanceDto);
         when(transactionMapper.toEntity(expectedTransactionDto)).thenReturn(inputTransEntity);
+        when(transactionMapper.toDto(savedTransEntity)).thenReturn(expectedSavedTransactionDto);
         when(transactionRepository.save(inputTransEntity)).thenReturn(savedTransEntity);
 
         //WHEN
-        transactionService.addDeposit(inputAmountDeposit);
+        TransactionDto actualDto = transactionService.addDeposit(inputAmountDeposit);
 
         //THEN
         verify(balanceService, times(1)).getFirstBalance();
         verify(balanceService, times(1)).updateBalance(1L, expectedNewBalance, LocalDate.now());
+        assertThat(actualDto).isEqualTo(expectedSavedTransactionDto);
     }
 
 
