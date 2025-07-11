@@ -4,7 +4,6 @@ import com.kata.bankaccountback.domain.mapper.BalanceMapper;
 import com.kata.bankaccountback.domain.model.dto.BalanceDto;
 import com.kata.bankaccountback.domain.model.entity.BalanceEntity;
 import com.kata.bankaccountback.domain.repository.BalanceRepository;
-import com.kata.bankaccountback.exceptions.InvalidDataException;
 import com.kata.bankaccountback.exceptions.RessourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,24 +11,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.*;
-
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-public class BalanceServiceTest {
+class BalanceServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(BalanceServiceTest.class);
     private BalanceServiceImpl balanceService;
@@ -43,7 +40,6 @@ public class BalanceServiceTest {
 
     @BeforeEach
     void setUp() {
-//        balanceService = new BalanceServiceImpl(balanceMapper, balanceRepository);
         balanceService = Mockito.spy(new BalanceServiceImpl(balanceMapper, balanceRepository));
     }
 
@@ -93,9 +89,9 @@ public class BalanceServiceTest {
     }
 
     @Test
-    public void SHOULD_call_findById_and_balanceRepositorySave_WHEN_updateBalance_is_called_with_correctValue() {
+    void SHOULD_call_findById_and_balanceRepositorySave_WHEN_updateBalance_is_called_with_correctValue() {
         //GIVEN
-        BalanceEntity inputEntity = createBalanceEntity(1L, LocalDate.now().minus(1, ChronoUnit.DAYS), BigDecimal.TEN);
+        BalanceEntity inputEntity = createBalanceEntity(1L, LocalDate.now().minusDays(1), BigDecimal.TEN);
         BigDecimal newAmount = BigDecimal.ZERO;
         LocalDate newDate = LocalDate.now();
         BalanceEntity savedEntity = createBalanceEntity(1L, newDate, newAmount);
@@ -119,6 +115,36 @@ public class BalanceServiceTest {
         assertThat(actualUpdatedDto).isEqualTo(expectedUpdatedDto);
 
     }
+
+
+//    @Test
+//    public void SHOULD_call_findById_and_balanceRepositorySave_WHEN_updateBalance_is_called_with_correctValue_withSpy() {
+//        //GIVEN
+//        BalanceEntity inputEntity = createBalanceEntity(1L, LocalDate.now().minus(1, ChronoUnit.DAYS), BigDecimal.TEN);
+//        BalanceEntity spyEntity = Mockito.spy(inputEntity);
+//        BigDecimal newAmount = BigDecimal.ZERO;
+//        LocalDate newDate = LocalDate.now();
+//        BalanceEntity savedEntity = createBalanceEntity(1L, newDate, newAmount);
+//        BalanceDto expectedUpdatedDto = new BalanceDto(1L, newDate, newAmount);
+//
+//        when(balanceRepository.findById(1L)).thenReturn(Optional.of(spyEntity));
+//        when(balanceRepository.save(spyEntity)).thenReturn(spyEntity);
+//        when(balanceMapper.toDto(savedEntity)).thenReturn(expectedUpdatedDto);
+//
+//        //WHEN
+//        BalanceDto actualUpdatedDto = balanceService.updateBalance(1L, BigDecimal.ZERO, LocalDate.now());
+//
+//        //THEN
+//        verify(balanceRepository, times(1)).findById(1L);
+//        verify(balanceRepository, times(1)).save(spyEntity);
+//        verify(balanceMapper, times(1)).toDto(savedEntity);
+//        //il faut faire un times sur balanceentity.setBalance(newAmount) et balanceentity.setDate(newDate); durant le update
+//        verify(spyEntity, times(1)).setBalance(newAmount);
+//        verify(spyEntity, times(1)).setDate(newDate);
+//        assertThat(actualUpdatedDto).isEqualTo(expectedUpdatedDto);
+//
+//    }
+
 
     @Test
     void SHOULD_call_findById_once_and_throw_RessourceNotFoundException_WHEN_updateBalance_is_called_and_balance_is_not_found() {
