@@ -30,9 +30,7 @@ public class TransactionController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Transactions received",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = TransactionDto.class)
-                    )}),
-            @ApiResponse(responseCode = "404", description = "Reception Failed",
-                    content = @Content)
+                    )})
     })
     public ResponseEntity<List<TransactionDto>> getTransactions() {
         return new ResponseEntity<>(transactionService.getAllTransactions(), HttpStatus.OK);
