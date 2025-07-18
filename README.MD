@@ -30,20 +30,25 @@ When in doubt, go for the simplest solution
 ## Choix des technologies
 
 La mission est fullstack, et dans un soucis de scallabilité, j'ai décidé de creer une API afin de fournir rapidement un BackEnd en premier lieu
-Concernant les technologies j'étais libre, donc j'ai optés pour des technologies récentes
+Concernant les technologies j'étais libre, donc j'ai opté pour des technologies récentes
 
 - Spring Boot 3.5.0
 - Maven
 - Java 21
 
-C'est pour toutes ces raisons pour lesquelles j'ai les dépendances suivantes:
+Ce sont les raisons pour lesquelles j'ai les dépendances suivantes:
 
 - Spring Web
 - API JDBC
 - Spring Data JPA
 - H2 Database (pour sa facilité de configuration, propose un stockage local dans un fichier, et se gére comme une base de données classique (requêtes SQL, facilité d'accés via une API)
 
-## Information supplémentaire
+## Informations supplémentaires
+Note Importante: Ce sujet traite d'un module précis, celui de depots et de retraits d'argent.
+Dû au temps restreint de realisation et à l'aspect vague du sujet, j'ai pris le parti de ne pas réaliser la partie authentification/authorisation et la gestion de multiple compte bancaire par utillisateur.
+Je suis bien conscient qu'en temps normal il faut lier les tables et les modules a des Utilisateurs et des comptes bancaire, ajouter Spring Security et protéger l'API (JWT, annotations, ...).
+Cela fera parti d'une future evolution sur une nouvelle branche (tout comme la Dockerisation actuellement!)
+
 Le back-end qui contient l'API doit se lancer idéalement en premier. Dans tous les cas, il est nécessaire pour faire fonctionner le projet.
 Sur intelliJ, il faut creer puis lancer une configurations de type Spring avec kata-bankAccount-back comme classPath
 
@@ -59,6 +64,8 @@ Lorsque des données sont enregistrées, vous les trouverez à la racine du doss
 A savoir qu'il existe des solutions pour transformer ce fichier en Json.
 
 ## TODO
+Mise en place des test d'integration (Gherkin + cucumber)
+Dans une moindre mesure, les Test End-to-End (Gherkin + cucumber + Selenium)
 Il reste a faire un TU sur TransactionEntity.
 J'ai décidé d'utiliser @PrePersist pour remplir automatiquement le champs date durant la création d'une transaction avec la date du jour.
 Donc il faut voir comment faire ce test (piste possible: Persister l'entité dans le test ?)

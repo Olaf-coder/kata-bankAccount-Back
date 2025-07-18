@@ -21,7 +21,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     private static final String DEPOSIT_AMOUNT_IS_NOT_CORRECT = "Deposit amount is not correct";
     private static final String WITHDRAW_AMOUNT_IS_NOT_CORRECT = "Withdraw amount is not correct";
-    private static final String NO_TRANSACTIONS_FOUND = "No transactions found";
     private final TransactionMapper transactionMapper;
     private final TransactionRepository transactionRepository;
     private final BalanceService balanceService;
@@ -79,14 +78,9 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionMapper.toDto(transactionRepository.save(transactionMapper.toEntity(result)));
     }
 
-    //TODO Retourner au pire une liste vide, pas un exception.
-
     @Override
     public List<TransactionDto> getAllTransactions() throws RessourceNotFoundException {
         List<TransactionEntity> transactions = transactionRepository.findAll();
-        if (transactions.isEmpty()) {
-            throw new RessourceNotFoundException(NO_TRANSACTIONS_FOUND);
-        }
         return transactions.stream().map(transactionMapper::toDto).toList();
     }
 
