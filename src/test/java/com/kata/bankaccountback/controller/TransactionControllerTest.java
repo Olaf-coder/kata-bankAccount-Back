@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kata.bankaccountback.advice.GlobalControllerAdvice;
 import com.kata.bankaccountback.domain.model.dto.TransactionDto;
 import com.kata.bankaccountback.exceptions.InvalidDataException;
-import com.kata.bankaccountback.exceptions.RessourceNotFoundException;
 import com.kata.bankaccountback.service.TransactionService;
 import com.kata.bankaccountback.service.TransactionServiceImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -109,20 +108,6 @@ void should_call_addTransaction_and_return_201_and_Transaction_when_POST_transac
                 .andExpect(jsonPath("$.[0].withdrawAmount", is(0)))
                 .andExpect(jsonPath("$.[0].balance", is(10)))
                 .andReturn();
-    }
-
-    //FAILED
-    @Test
-    void should_call_getAllTransactions_and_return_404_when_GET_contacts_called() throws Exception {
-        //GIVEN
-        String message = "Transactions not found";
-        Mockito.when(transactionService.getAllTransactions()).thenThrow(new RessourceNotFoundException(message));
-
-        //WHEN THEN
-        mockMvc.perform(get(ENDPOINT +"/"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message", is(message)))
-                .andExpect(jsonPath("$.code", is(HttpStatus.NOT_FOUND.value())));
     }
 
 //DEPOSITS

@@ -61,7 +61,7 @@ class BalanceControllerTest {
 
     //FAILED
     @Test
-    void should_call_getAllTransactions_and_return_404_when_GET_contacts_called() throws Exception {
+    void should_call_getFirstBalance_and_return_404_when_GET_contacts_called() throws Exception {
         //GIVEN
         String message = "No balance Found";
         Mockito.when(balanceService.getFirstBalance()).thenThrow(new RessourceNotFoundException(message));

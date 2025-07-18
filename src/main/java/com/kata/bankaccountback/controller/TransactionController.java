@@ -3,6 +3,7 @@ package com.kata.bankaccountback.controller;
 import com.kata.bankaccountback.domain.model.dto.TransactionDto;
 import com.kata.bankaccountback.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,10 +30,8 @@ public class TransactionController {
     @GetMapping("/") @Operation(summary = "Get all transactions")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Transactions received",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = TransactionDto.class)
-                    )}),
-            @ApiResponse(responseCode = "404", description = "Reception Failed",
-                    content = @Content)
+                    content = {@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TransactionDto.class))
+                    )})
     })
     public ResponseEntity<List<TransactionDto>> getTransactions() {
         return new ResponseEntity<>(transactionService.getAllTransactions(), HttpStatus.OK);

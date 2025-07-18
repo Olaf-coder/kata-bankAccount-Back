@@ -6,7 +6,6 @@ import com.kata.bankaccountback.domain.model.dto.TransactionDto;
 import com.kata.bankaccountback.domain.model.entity.TransactionEntity;
 import com.kata.bankaccountback.domain.repository.TransactionRepository;
 import com.kata.bankaccountback.exceptions.InvalidDataException;
-import com.kata.bankaccountback.exceptions.RessourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,12 +17,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
@@ -50,7 +47,6 @@ import static org.mockito.Mockito.any;
     }
 
     //CREATE
-    // le faire en parameterized pour ZERO ou null sur Withdraw
     @ParameterizedTest
     @MethodSource("transactionProviderCorrectDepositForAddTransaction")
     void SHOULD_call_save_once_with_correct_value_deposit_and_return_saved_transaction_WHEN_addTransaction_is_called_with_correct_transaction(TransactionDto inputDto) {
@@ -85,7 +81,7 @@ import static org.mockito.Mockito.any;
 
         TransactionEntity inputEntity = createTransactionEntity(null, null, BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.valueOf(-10));
         TransactionEntity savedEntity = createTransactionEntity(1L, LocalDate.now(), BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.valueOf(-10));
-//
+
         when(balanceService.getFirstBalance()).thenReturn(balanceDto);
         when(transactionMapper.toEntity(inputDto)).thenReturn(inputEntity);
         when(transactionRepository.save(inputEntity)).thenReturn(savedEntity);
@@ -135,15 +131,19 @@ import static org.mockito.Mockito.any;
     }
 
     @Test
-    void SHOULD_call_findAll_once_and_raise_NotFoundException_WHEN_getAllTransactions_is_called_and_no_transactions_registered() {
+    void SHOULD_call_findAll_once_and_return_empty_list_WHEN_getAllTransactions_is_called_and_transactions_are_registered() {
         //GIVEN
-        List<TransactionEntity> existingEntities = new ArrayList<>();
-        when(transactionRepository.findAll()).thenReturn(existingEntities);
+        List<TransactionEntity> entities = List.of();
 
-        //WHEN THEN
-        assertThatExceptionOfType(RessourceNotFoundException.class).isThrownBy(() -> transactionService.getAllTransactions());
+        when(transactionRepository.findAll()).thenReturn(entities);
+
+        //WHEN
+        List<TransactionDto> actualDtos = transactionService.getAllTransactions();
+
+        //THEN
         verify(transactionRepository, times(1)).findAll();
-        verify(transactionMapper, never()).toDto(any(TransactionEntity.class));
+
+        assertThat(actualDtos).isEmpty();
     }
 
     @Test
@@ -212,7 +212,6 @@ import static org.mockito.Mockito.any;
         assertThat(actualDto).isEqualTo(expectedSavedTransactionDto);
     }
 
-
     @ParameterizedTest
     @MethodSource("createIncorrectAmount")
     void SHOULD_not_call_updateBalance_and_throw_InvalidDateException_WHEN_addDeposit_is_called_with_incorrect_amount(BigDecimal wrongAmount) {
@@ -225,7 +224,6 @@ import static org.mockito.Mockito.any;
         verify(balanceService, never()).updateBalance(any(Long.class), any(BigDecimal.class), any(LocalDate.class));
         verify(transactionRepository, never()).save(any(TransactionEntity.class));
     }
-
 
     private static Stream<Arguments> transactionProviderIncorrectForAddTransaction() {
         return Stream.of(
@@ -241,7 +239,6 @@ import static org.mockito.Mockito.any;
         return Stream.of(
                 Arguments.of(new TransactionDto(null, null, BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.valueOf(-10))),
                 Arguments.of(new TransactionDto(null, null, null, BigDecimal.TEN,  BigDecimal.valueOf(-10)))
-
         );
     }
 
@@ -278,7 +275,7 @@ import static org.mockito.Mockito.any;
         );
     }
 
-    TransactionEntity createTransactionEntity(Long id, LocalDate date, BigDecimal deposit, BigDecimal withdrawal, BigDecimal balance) {
+    private TransactionEntity createTransactionEntity(Long id, LocalDate date, BigDecimal deposit, BigDecimal withdrawal, BigDecimal balance) {
         TransactionEntity transactionEntity = new TransactionEntity();
 
         transactionEntity.setId(id);
